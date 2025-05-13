@@ -1,32 +1,363 @@
-# Prerequisites
-*.d
+#include <iostream>
+#include <map>
+#include <vector>
+#include <string>
+#include <limits>
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+using namespace std;
 
-# Precompiled Headers
-*.gch
-*.pch
+const string ADMIN_PASSWORD = "PPMRJ"; // Hasło administratora
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+struct Student {
+    int id;
+    string imie;
+    string nazwisko;
+    string plec;
+    int wiek;
+    string miejscowosc;
+    int numer_albumu;
+    string kierunek;
+};
 
-# Fortran module files
-*.mod
-*.smod
+// Baza użytkowników (login -> hasło)
+map<string, string> userTable;
+// Baza studentów
+vector<Student> bazaStudentow;
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
+class BazaDanych {
+public:
+    void addRecord(int id, const string& imie, const string& nazwisko, const string& plec, int wiek, const string& miejscowosc, int numer_albumu, const string& kierunek) {
+        bazaStudentow.push_back({id, imie, nazwisko, plec, wiek, miejscowosc, numer_albumu, kierunek});
+    }
 
-# Executables
-*.exe
-*.out
-*.app
+    vector<Student> searchById(int id) const {
+        vector<Student> result;
+        for (const auto& record : bazaStudentow) {
+            if (record.id == id) {
+                result.push_back(record);
+            }
+        }
+        return result;
+    }
+
+    vector<Student> searchByName(const string& imie) const {
+        vector<Student> result;
+        for (const auto& record : bazaStudentow) {
+            if (record.imie.find(imie) != string::npos) {
+                result.push_back(record);
+            }
+        }
+        return result;
+    }
+
+    vector<Student> searchByNazwisko(const string& nazwisko) const {
+        vector<Student> result;
+        for (const auto& record : bazaStudentow) {
+            if (record.nazwisko.find(nazwisko) != string::npos) {
+                result.push_back(record);
+            }
+        }
+        return result;
+    }
+
+    vector<Student> searchByPlec(const string& plec) const {
+        vector<Student> result;
+        for (const auto& record : bazaStudentow) {
+            if (record.plec == plec) {
+                result.push_back(record);
+            }
+        }
+        return result;
+    }
+
+    vector<Student> searchByWiek(int wiek) const {
+        vector<Student> result;
+        for (const auto& record : bazaStudentow) {
+            if (record.wiek == wiek) {
+                result.push_back(record);
+            }
+        }
+        return result;
+    }
+
+    vector<Student> searchByMiejscowosc(const string& miejscowosc) const {
+        vector<Student> result;
+        for (const auto& record : bazaStudentow) {
+            if (record.miejscowosc.find(miejscowosc) != string::npos) {
+                result.push_back(record);
+            }
+        }
+        return result;
+    }
+
+    vector<Student> searchByNumerAlbumu(int numer_albumu) const {
+        vector<Student> result;
+        for (const auto& record : bazaStudentow) {
+            if (record.numer_albumu == numer_albumu) {
+                result.push_back(record);
+            }
+        }
+        return result;
+    }
+
+    vector<Student> searchByKierunek(const string& kierunek) const {
+        vector<Student> result;
+        for (const auto& record : bazaStudentow) {
+            if (record.kierunek.find(kierunek) != string::npos) {
+                result.push_back(record);
+            }
+        }
+        return result;
+    }
+    
+    void printResults(const vector<Student>& results) const {
+        for (const auto& record : results) {
+            cout << "ID: " << record.id << ", Imię: " << record.imie << ", Nazwisko: " << record.nazwisko 
+                 << ", Płeć: " << record.plec << ", Wiek: " << record.wiek << ", Miejscowość: " << record.miejscowosc 
+                 << ", Numer albumu: " << record.numer_albumu << ", Kierunek: " << record.kierunek << '\n';
+        }
+    }
+
+ 
+
+    void chooseSearchMethod() const {
+        int method;
+        cout << "Wybierz metodę wyszukiwania (1 - imię, 2 - nazwisko, 3 - płeć, 4 - miejscowość, 5 - kierunek, 6 - id, 7 - wiek, 8 - numer albumu): ";
+        cin >> method;
+        cin.ignore(); // ignoruje znak nowej linii po wprowadzeniu metody
+
+        if (method >= 1 && method <= 5) {
+            string criteria;
+            cout << "Wprowadź kryteria do wyszukania: ";
+            getline(cin, criteria);
+            searchAndPrint(criteria, method);
+        } else if (method >= 6 && method <= 8) {
+            int criteria;
+            cout << "Wprowadź kryteria do wyszukania: ";
+            cin >> criteria;
+            searchAndPrint(criteria, method - 5);
+        } else {
+            cout << "Niewłaściwa metoda wyszukiwania.\n";
+        }
+    }
+
+    void searchAndPrint(const string& criteria, int method) const {
+        vector<Student> results;
+        switch (method) {
+            case 1:
+                results = searchByName(criteria);
+                break;
+            case 2:
+                results = searchByNazwisko(criteria);
+                break;
+            case 3:
+                results = searchByPlec(criteria);
+                break;
+            case 4:
+                results = searchByMiejscowosc(criteria);
+                break;
+            case 5:
+                results = searchByKierunek(criteria);
+                break;
+            default:
+                cout << "Niewłaściwa metoda wyszukiwania.\n";
+                return;
+        }
+        printResults(results);
+    }
+
+    void searchAndPrint(int criteria, int method) const {
+        vector<Student> results;
+        switch (method) {
+            case 1:
+                results = searchById(criteria);
+                break;
+            case 2:
+                results = searchByWiek(criteria);
+                break;
+            case 3:
+                results = searchByNumerAlbumu(criteria);
+                break;
+            default:
+                cout << "Niewłaściwa metoda wyszukiwania.\n";
+                return;
+        }
+        printResults(results);
+    }
+};
+
+// Rejestracja użytkownika (chroniona hasłem administratora)
+void signup() {
+    string adminPass;
+    cout << "🔒 Podaj hasło administratora: ";
+    cin >> adminPass;
+
+    if (adminPass != ADMIN_PASSWORD) {
+        cout << "❌ Niepoprawne hasło! Dostęp zabroniony.\n";
+        return; // Przerywamy rejestrację
+    } else {
+        cout << "✅ Hasło poprawne.\n";
+    }
+
+    string login, haslo;
+    cout << "📝 Podaj login dla nowego użytkownika: ";
+    cin >> login;
+    cout << "🔑 Podaj hasło dla nowego użytkownika: ";
+    cin >> haslo;
+
+    if (userTable.find(login) == userTable.end()) {
+        userTable[login] = haslo;
+        cout << "✅ Użytkownik '" << login << "' został zarejestrowany pomyślnie!\n";
+    } else {
+        cout << "⚠️ Użytkownik już istnieje!\n";
+    }
+}
+
+// Logowanie użytkownika
+bool login() {
+    string login, haslo;
+    cout << "🔐 Podaj login: ";
+    cin >> login;
+    cout << "🔑 Podaj hasło: ";
+    cin >> haslo;
+
+    if (userTable.find(login) != userTable.end() && userTable[login] == haslo) {
+        cout << "✅ Zalogowano pomyślnie!\n";
+        return true;
+    } else {
+        cout << "❌ Niewłaściwe dane logowania. Spróbuj ponownie.\n";
+        return false;
+    }
+}
+
+// Dodawanie studenta
+void dodajStudenta() {
+    Student nowyStudent;
+
+    cout << "📌 Podaj ID: ";
+    cin >> nowyStudent.id;
+    cin.ignore();
+
+    cout << "👤 Podaj Imię: ";
+    getline(cin, nowyStudent.imie);
+
+    cout << "👤 Podaj Nazwisko: ";
+    getline(cin, nowyStudent.nazwisko);
+
+    cout << "🚻 Podaj Płeć: ";
+    getline(cin, nowyStudent.plec);
+
+    cout << "🎂 Podaj Wiek: ";
+    cin >> nowyStudent.wiek;
+    cin.ignore();
+
+    cout << "🏡 Podaj Miejscowość: ";
+    getline(cin, nowyStudent.miejscowosc);
+
+    cout << "🆔 Podaj Numer Albumu: ";
+    cin >> nowyStudent.numer_albumu;
+    cin.ignore();
+
+    cout << "📖 Podaj Kierunek Studiów: ";
+    getline(cin, nowyStudent.kierunek);
+
+    bazaStudentow.push_back(nowyStudent);
+    cout << "\n✅ Student został dodany poprawnie!\n";
+}
+
+// Wyświetlanie wszystkich studentów
+void wyswietlWszystkich() {
+    if (bazaStudentow.empty()) {
+        cout << "\n⚠️ Brak zapisanych studentów.\n";
+        return;
+    }
+
+    cout << "\n📋 Lista Studentów:\n";
+    for (const auto& s : bazaStudentow) {
+        cout << "-------------------------------------\n";
+        cout << "📌 ID: " << s.id << "\n👤 Imię i Nazwisko: " << s.imie << " " << s.nazwisko
+             << "\n🚻 Płeć: " << s.plec << "\n🎂 Wiek: " << s.wiek << "\n🏡 Miejscowość: " << s.miejscowosc
+             << "\n📖 Kierunek: " << s.kierunek << "\n🆔 Numer Albumu: " << s.numer_albumu << "\n";
+    }
+    cout << "-------------------------------------\n";
+}
+
+int main() {
+    int wybor;
+    bool zalogowany = false;
+
+    do {
+        cout << "\n📌 MENU:\n";
+        cout << "1️⃣ Zarejestruj nowego użytkownika (wymaga hasła administratora)\n";
+        cout << "2️⃣ Zaloguj się\n";
+        cout << "3️⃣ Wyjście\n";
+        cout << "🟢 Wybór: ";
+        cin >> wybor;
+
+        if (cin.fail()) {
+            cin.clear(); // Czyści stan błędu
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignoruje niepoprawne wejście
+            cout << "⚠️ Niepoprawny wybór! Spróbuj ponownie.\n";
+            continue;
+        }
+
+        cin.ignore();
+
+        switch (wybor) {
+            case 1:
+                signup();
+                break;
+            case 2:
+                zalogowany = login();
+                break;
+            case 3:
+                cout << "🔴 Zamykanie programu...\n";
+                return 0;
+            default:
+                cout << "⚠️ Niepoprawny wybór! Spróbuj ponownie.\n";
+        }
+    } while (!zalogowany);
+
+    BazaDanych db;
+   
+
+    // Po zalogowaniu użytkownik ma dostęp do bazy studentów
+    do {
+        cout << "\n📌 MENU STUDENTÓW:\n";
+        cout << "1️⃣ Dodaj studenta\n";
+        cout << "2️⃣ Wyświetl wszystkich studentów\n";
+        cout << "3️⃣ Wyszukaj studenta\n";
+        cout << "4️⃣ Wyloguj się\n";
+        cout << "🟢 Wybór: ";
+        cin >> wybor;
+
+        if (cin.fail()) {
+            cin.clear(); // Czyści stan błędu
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignoruje niepoprawne wejście
+            cout << "⚠️ Niepoprawny wybór! Spróbuj ponownie.\n";
+            continue;
+        }
+
+        cin.ignore();
+
+        switch (wybor) {
+            case 1:
+                dodajStudenta();
+                break;
+            case 2:
+                wyswietlWszystkich();
+                break;
+            case 3:
+                db.chooseSearchMethod();
+                break;
+            case 4:
+                cout << "🔒 Wylogowano.\n";
+                zalogowany = false;
+                break;
+            default:
+                cout << "⚠️ Niepoprawny wybór! Spróbuj ponownie.\n";
+        }
+    } while (zalogowany);
+
+    return 0;
+}
